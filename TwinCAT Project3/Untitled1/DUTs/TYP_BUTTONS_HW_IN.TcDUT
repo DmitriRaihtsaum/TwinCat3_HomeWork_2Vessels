@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="TYP_BUTTONS_HW_IN" Id="{c73cc7de-74a7-46f0-9007-c962b31c6184}">
+    <Declaration><![CDATA[TYPE TYP_BUTTONS_HW_IN :
+STRUCT
+	ModeButton : BOOL; // false - state = MANUAL; true - state = AUTOMATIC
+	AnalogButtons : ARRAY [1..2] OF INT; // in manual mode button 1 = Max value for vessel 2 pressure; 2 = Min value for vessel 2 pressure
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <GVL Name="gOpc" Id="{75962204-cf7b-4a17-b9d9-6bdb8cdb3d0e}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	{attribute 'OPC.UA.DA' := '1'}
+	Vessel : ARRAY [1..2] OF TYP_VESSEL_HW;
+	{attribute 'OPC.UA.DA' := '1'}
+	Buttons : TYP_BUTTONS_HW_IN;
+	{attribute 'OPC.UA.DA' := '1'}
+	SystemState : INT;	
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

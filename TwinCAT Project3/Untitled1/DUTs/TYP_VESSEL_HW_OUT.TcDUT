@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <DUT Name="TYP_VESSEL_HW_OUT" Id="{782552de-4756-4a34-b7ea-a0473f341105}">
+    <Declaration><![CDATA[TYPE TYP_VESSEL_HW_OUT :
+STRUCT
+	Valves : BOOL; //vessel valve true = open; false = closed
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

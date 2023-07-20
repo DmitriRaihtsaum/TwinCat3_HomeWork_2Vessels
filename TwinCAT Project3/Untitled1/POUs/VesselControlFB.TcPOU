@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="VesselControlFB" Id="{e6bb8feb-d04d-47cd-95d4-09d5ffa70f50}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK VesselControlFB
+VAR_INPUT	
+END_VAR
+VAR_OUTPUT	
+END_VAR
+VAR			
+iPressureLimitVessel_2_Min : INT; 		//Temp Variables for Vessel2 Pressure Control 
+iPressureLimitVessel_2_Max : INT; 		//Temp Variables for Vessel2 Pressure Control 	
+AutoManPushButton_rTrig : R_TRIG ;			//Button Rise Edge Read
+END_VAR
+VAR CONSTANT 
+cAutoLimitMinPressureVessel2 : INT :=40; // Automatic Pressure Control Constant MIN
+cAutoLimitMaxPressureVessel2 : INT :=60; // Automatic Pressure Control Constant MAX
+cOneBar : INT :=1;						// Constant 1 Bar 
+iAutoMode : INT := 1;
+iManualMode : INT := 0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//=============================================================================
+// Dmitri Raihtsaum - Copyright 2023
+// Created By: Dmitri Raihtsaum
+//-----------------------------------------------------------------------------
+// Tested with:   Twincat3, UaExpert
+// Engineering:   Twincat3
+// Functionality: Test Home Work - Vessel Pressure Control
+// Date: 20.07.2023
+// Rev 0.1
+//=============================================================================
+
+AutoManPushButton_rTrig(CLK :=  gOpc.Buttons.ModeButton); 		//Button Rise Edge Read
+// System Mode Control
+// push button for toggling the state between AUTOMATIC and MANUAL.
+IF AutoManPushButton_rTrig.Q AND gopc.SystemState = iAutoMode THEN  			//Change From Auto To Manual
+	gopc.SystemState := iManualMode;											//Change From Auto To Manual
+ELSIF AutoManPushButton_rTrig.Q AND gopc.SystemState = iManualMode THEN		//Change From Manual To Auto
+	gopc.SystemState:= iAutoMode; 											//Change From Manual To Auto
+END_IF;
+//Vessel 1 Control
+// The pressure must be equal in both vessels ± 1 bar.
+// Pressure in Vessel 1 is controlled in reference to Vessel 2 pressure:
+// When pressure in Vessel 1 is 1 bar higher than is Vessel 2, then the Vessel 1
+//valve shall be opened to release the pressure until the pressure in Vessel 1
+//in 1 bar lower than the pressure in Vessel 2.
+
+IF gOpc.Vessel[1].In.Sensor  >=  gOpc.Vessel[2].In.Sensor + cOneBar  THEN // Pressure Comparation Vessel1 and Vessel2 
+	gOpc.Vessel[1].Out.Valves  :=TRUE;									  //Open Valve Y1
+END_IF;
+
+IF gOpc.Vessel[1].In.Sensor  <=  gOpc.Vessel[2].In.Sensor - cOneBar  THEN // Pressure Comparation Vessel1 and Vessel2
+	gOpc.Vessel[1].Out.Valves  := FALSE;								  //Close Valve Y1
+END_IF;
+//Vessel 2 Control
+//• Pressure in Vessel 2 is controlled in REFERENCE TO MIN AND MAX pressure
+//parameters:
+//o When pressure in Vessel 2 reaches Max parameter, then the Vessel 2 valve
+//shall be opened to release the pressure until the pressure in Vessel 2
+//reaches Min parameter.
+//• The system shall have 2 states:
+//o AUTOMATIC Min and Max parameters for Vessel 2 are given as
+//constants 40 bar and 60 bar correspondingly.
+//o MANUAL Min and Max parameters for Vessel 2 are given by Button 1
+//(analogue potentiometer knob) and Button 2 (analogue potentiometer
+//knob).
+//o The state shall be changed using a third button (push button).
+IF gopc.SystemState= iManualMode THEN 
+	iPressureLimitVessel_2_Min := gOpc.Buttons.AnalogButtons[1];   //Temp Varibles data sellection
+	iPressureLimitVessel_2_Max := gOpc.Buttons.AnalogButtons[2];	//Temp Varibles data sellection
+END_IF;
+IF gopc.SystemState = iAutoMode THEN 
+	iPressureLimitVessel_2_Min := cAutoLimitMinPressureVessel2;			//Temp Varibles data sellection
+	iPressureLimitVessel_2_Max := cAutoLimitMaxPressureVessel2;			//Temp Varibles data sellection
+END_IF;
+IF gOpc.Vessel[2].In.Sensor  >= iPressureLimitVessel_2_Max THEN  // Pressure Comparation  Vessel2 and Limits
+	gOpc.Vessel[2].Out.Valves  :=TRUE;												//Open Valve Y2
+END_IF
+IF gOpc.Vessel[2].In.Sensor <= iPressureLimitVessel_2_MIN THEN // Pressure Comparation  Vessel2 and Limits
+	gOpc.Vessel[2].Out.Valves  :=FALSE;											//Close Valve Y2
+END_IF
+
+//=============================================================================
+//END
+//=============================================================================
+
+
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="VesselControlFB">
+      <LineId Id="129" Count="9" />
+      <LineId Id="118" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="46" Count="1" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="145" Count="3" />
+      <LineId Id="144" Count="0" />
+      <LineId Id="181" Count="0" />
+      <LineId Id="50" Count="2" />
+      <LineId Id="182" Count="0" />
+      <LineId Id="54" Count="1" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="150" Count="10" />
+      <LineId Id="149" Count="0" />
+      <LineId Id="60" Count="1" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="62" Count="0" />
+      <LineId Id="64" Count="2" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="108" Count="0" />
+      <LineId Id="112" Count="1" />
+      <LineId Id="115" Count="1" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="139" Count="3" />
+      <LineId Id="109" Count="2" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="104" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
